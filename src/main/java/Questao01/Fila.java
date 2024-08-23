@@ -3,7 +3,6 @@ package Questao01;
 
 /**
  *
- * @author uriel
  * @param <T>
  */
 public class Fila<T> {

@@ -4,7 +4,6 @@
  */
 package Questao01;
 
-
 public class Aresta<TIPO> {
     private Double peso;
     private Vertice<TIPO> inicio;

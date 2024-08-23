@@ -1,24 +1,48 @@
-
 package Questao05;
 
 import Questao01.Grafo;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
-
-public class Run{
+public class Run {
     public static void main(String[] args) {
         Grafo<String> grafo = new Grafo<>();
-        grafo.adicionarVertice("A");
-        grafo.adicionarVertice("B");
-        grafo.adicionarVertice("C");
-        grafo.adicionarVertice("D");
 
-        grafo.adicionarAresta(1.0, "A", "B", false);
-        grafo.adicionarAresta(4.0, "B", "C", false);
-        grafo.adicionarAresta(3.0, "C", "D", false);
-        grafo.adicionarAresta(2.0, "A", "D", false);
+        // Conjunto para armazenar os vértices já adicionados
+        Set<String> verticesAdicionados = new HashSet<>();
 
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/java/entrada/dados_q5.txt"))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                String[] vertices = linha.split(";");
+                String vertice1 = vertices[0];
+                String vertice2 = vertices[1];
+                Double peso = Double.parseDouble(vertices[2]);
+
+                // Adiciona vértice1 ao grafo apenas se ainda não foi adicionado
+                if (!verticesAdicionados.contains(vertice1)) {
+                    grafo.adicionarVertice(vertice1);
+                    verticesAdicionados.add(vertice1);
+                }
+
+                // Adiciona vértice2 ao grafo apenas se ainda não foi adicionado
+                if (!verticesAdicionados.contains(vertice2)) {
+                    grafo.adicionarVertice(vertice2);
+                    verticesAdicionados.add(vertice2);
+                }
+
+                // Adiciona a aresta entre os vértices
+                grafo.adicionarAresta(peso, vertice1, vertice2, false);
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
+
+        // Executa o algoritmo de Borůvka
         grafo.boruvkaMST();
     }
-
 }

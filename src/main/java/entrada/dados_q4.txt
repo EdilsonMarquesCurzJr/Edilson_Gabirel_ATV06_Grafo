@@ -1,0 +1,16 @@
+A;B
+A;D
+A;H
+B;C
+B;I
+B;G
+C;D
+C;F
+D;I
+D;E
+E;H
+E;F
+F;G
+F;I
+G;H
+H;I

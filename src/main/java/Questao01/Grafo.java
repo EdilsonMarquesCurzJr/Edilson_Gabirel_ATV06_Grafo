@@ -7,8 +7,6 @@ package Questao01;
 import java.util.*;
 
 /**
- *
- * @author joaop
  * @param <TIPO>
  */
 public class Grafo<TIPO> {
