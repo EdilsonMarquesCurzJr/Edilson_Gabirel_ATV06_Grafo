@@ -1,93 +1,47 @@
 package Questao06;
 
+import Questao01.Grafo;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 public class Questao06 {
     public static void main(String[] args) {
-        // Exemplo de grafo com 5 vértices
-        int V = 5;
-        List<TSPFromMST.Edge> edges = Arrays.asList(
-                new TSPFromMST.Edge(0, 1, 2),
-                new TSPFromMST.Edge(0, 2, 3),
-                new TSPFromMST.Edge(1, 2, 1),
-                new TSPFromMST.Edge(1, 3, 4),
-                new TSPFromMST.Edge(2, 3, 5),
-                new TSPFromMST.Edge(3, 4, 6)
-        );
+        Grafo<String> grafo = new Grafo<>();
 
-        // Encontrar a MST usando o Algoritmo de Prim
-        List<TSPFromMST.Edge> mst = primMST(V, edges);
+        // Conjunto para armazenar os vértices já adicionados
+        Set<String> verticesAdicionados = new HashSet<>();
 
-        // Construir o ciclo a partir da MST
-        List<Integer> cycle = constructCycle(mst, V);
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/java/entrada/dados_q6.txt"))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                String[] vertices = linha.split(";");
+                String vertice1 = vertices[0];
+                String vertice2 = vertices[1];
+                Double peso = Double.parseDouble(vertices[2]);
 
-        // Imprimir o ciclo
-        System.out.println("Ciclo Mínimo Aproximado:");
-        for (int i = 0; i < cycle.size(); i++) {
-            System.out.print(cycle.get(i) + " ");
-            if (i < cycle.size() - 1) {
-                System.out.print("-> ");
-            }
-        }
-        System.out.println();
-    }
-
-    // Algoritmo de Prim para encontrar a MST
-    public static List<TSPFromMST.Edge> primMST(int V, List<TSPFromMST.Edge> edges) {
-        List<TSPFromMST.Edge> mst = new ArrayList<>();
-        boolean[] inMST = new boolean[V];
-        PriorityQueue<TSPFromMST.Edge> pq = new PriorityQueue<>(Comparator.comparingInt(e -> e.weight));
-        pq.add(new TSPFromMST.Edge(-1, 0, 0)); // Começar com o vértice 0
-
-        while (!pq.isEmpty()) {
-            TSPFromMST.Edge edge = pq.poll();
-            int u = edge.src;
-            int v = edge.dest;
-            int weight = edge.weight;
-
-            if (inMST[v]) continue; // Verificar se o vértice já está na MST
-
-            inMST[v] = true;
-            if (u != -1) {
-                mst.add(edge);
-            }
-
-            for (TSPFromMST.Edge e : edges) {
-                if (e.src == v && !inMST[e.dest]) {
-                    pq.add(new TSPFromMST.Edge(v, e.dest, e.weight));
-                } else if (e.dest == v && !inMST[e.src]) {
-                    pq.add(new TSPFromMST.Edge(v, e.src, e.weight));
+                // Adiciona vértice1 ao grafo apenas se ainda não foi adicionado
+                if (!verticesAdicionados.contains(vertice1)) {
+                    grafo.adicionarVertice(vertice1);
+                    verticesAdicionados.add(vertice1);
                 }
+
+                // Adiciona vértice2 ao grafo apenas se ainda não foi adicionado
+                if (!verticesAdicionados.contains(vertice2)) {
+                    grafo.adicionarVertice(vertice2);
+                    verticesAdicionados.add(vertice2);
+                }
+
+                // Adiciona a aresta entre os vértices
+                grafo.adicionarAresta(peso, vertice1, vertice2, false);
             }
-        }
-        return mst;
-    }
-
-    // Construir o ciclo a partir da MST
-    public static List<Integer> constructCycle(List<TSPFromMST.Edge> mst, int V) {
-        Map<Integer, List<Integer>> graph = new HashMap<>();
-        for (TSPFromMST.Edge e : mst) {
-            graph.computeIfAbsent(e.src, k -> new ArrayList<>()).add(e.dest);
-            graph.computeIfAbsent(e.dest, k -> new ArrayList<>()).add(e.src);
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
         }
 
-        List<Integer> cycle = new ArrayList<>();
-        boolean[] visited = new boolean[V];
-        dfs(0, graph, visited, cycle);
-        cycle.add(cycle.get(0)); // Fechar o ciclo
-
-        return cycle;
-    }
-
-    // DFS para construir o ciclo
-    public static void dfs(int v, Map<Integer, List<Integer>> graph, boolean[] visited, List<Integer> cycle) {
-        visited[v] = true;
-        cycle.add(v);
-
-        for (int neighbor : graph.get(v)) {
-            if (!visited[neighbor]) {
-                dfs(neighbor, graph, visited, cycle);
-            }
-        }
+        // Executa o algoritmo de Borůvka
+        grafo.boruvkaMST06();
     }
 }

@@ -13,7 +13,7 @@ public class Grafo<TIPO> {
     private final ArrayList<Vertice<TIPO>> vertices;
     private final ArrayList<Aresta<TIPO>> arestas;
 
-    public Grafo(){
+    public Grafo() {
         this.vertices = new ArrayList<>();
         this.arestas = new ArrayList<>();
     }
@@ -26,7 +26,7 @@ public class Grafo<TIPO> {
         return arestas;
     }
 
-    public void adicionarVertice(TIPO dado){
+    public void adicionarVertice(TIPO dado) {
         Vertice<TIPO> novoVertice = new Vertice<>(dado);
         this.vertices.add(novoVertice);
     }
@@ -48,16 +48,17 @@ public class Grafo<TIPO> {
         }
     }
 
-    public Vertice<TIPO> getVertice(TIPO dado){
+    public Vertice<TIPO> getVertice(TIPO dado) {
         Vertice<TIPO> vertice = null;
-        for(int i=0; i < this.vertices.size(); i++){
-            if (this.vertices.get(i).getDado().equals(dado)){
+        for (int i = 0; i < this.vertices.size(); i++) {
+            if (this.vertices.get(i).getDado().equals(dado)) {
                 vertice = this.vertices.get(i);
                 break;
             }
         }
         return vertice;
     }
+
     public void buscaEmProfundidadeComTempos(TIPO inicio) {
         // Inicializa os dados para a busca
         Vertice<TIPO> verticeInicio = getVertice(inicio);
@@ -104,18 +105,19 @@ public class Grafo<TIPO> {
             }
         }
     }
-    public void buscaEmLargura(){
+
+    public void buscaEmLargura() {
         ArrayList<Vertice<TIPO>> marcados = new ArrayList<>();
         ArrayList<Vertice<TIPO>> fila = new ArrayList<>();
         Vertice<TIPO> atual = this.vertices.get(0);
         marcados.add(atual);
         System.out.println(atual.getDado());
         fila.add(atual);
-        while(!fila.isEmpty()){
+        while (!fila.isEmpty()) {
             Vertice<TIPO> visitado = fila.get(0);
-            for(int i=0; i < visitado.getArestasSaida().size(); i++){
+            for (int i = 0; i < visitado.getArestasSaida().size(); i++) {
                 Vertice<TIPO> proximo = visitado.getArestasSaida().get(i).getFim();
-                if (!marcados.contains(proximo)){ //se o vértice ainda não foi marcado
+                if (!marcados.contains(proximo)) { //se o vértice ainda não foi marcado
                     marcados.add(proximo);
                     System.out.println(proximo.getDado());
                     fila.add(proximo);
@@ -381,6 +383,7 @@ public class Grafo<TIPO> {
             System.out.println("O grafo NÃO é bipartido.");
         }
     }
+
     private boolean temCicloOrdenacaoTopologicaAux(Vertice<TIPO> vertice, Set<Vertice<TIPO>> visitados, Stack<Vertice<TIPO>> pilha) {
         visitados.add(vertice);
         pilha.push(vertice);
@@ -446,8 +449,8 @@ public class Grafo<TIPO> {
                 System.out.println("Caminho encontrado:");
 
 
-                int con=0;
-                while (!caminho.isEmpty() && con < caminho.size()-1) {
+                int con = 0;
+                while (!caminho.isEmpty() && con < caminho.size() - 1) {
                     System.out.print(caminho.pop().getDado() + " ");
                 }
                 System.out.println(destino);
@@ -483,6 +486,7 @@ public class Grafo<TIPO> {
         atual.setTempoPartida(++tempoAtual); // Registra o tempo de partida
         return false;
     }
+
     public void imprimirTempos() {
         // Imprimir os tempos de chegada e partida de cada vértice
         for (Vertice<TIPO> vertice : vertices) {
@@ -574,6 +578,7 @@ public class Grafo<TIPO> {
             System.out.println("Distancia total: " + distancias[vertices.indexOf(getVertice(origem))][vertices.indexOf(getVertice(destino))] + " km.");
         }
     }
+
     public void boruvkaMST() {
         // Inicialização
         int numVertices = vertices.size();
@@ -623,4 +628,124 @@ public class Grafo<TIPO> {
     }
 
 
+    public void boruvkaMST06() {
+        // Inicialização
+        int numVertices = vertices.size();
+        UnionFind<TIPO> uf = new UnionFind<>(vertices);
+        List<Aresta<TIPO>> mst = new ArrayList<>();
+
+        // Enquanto o MST não estiver completo
+        while (mst.size() < numVertices - 1) {
+            // Array para armazenar a menor aresta de cada componente
+            Map<Vertice<TIPO>, Aresta<TIPO>> menorAresta = new HashMap<>();
+
+            // Percorre todas as arestas para encontrar a menor aresta de cada componente
+            for (Aresta<TIPO> aresta : arestas) {
+                Vertice<TIPO> u = uf.find(aresta.getInicio());
+                Vertice<TIPO> v = uf.find(aresta.getFim());
+
+                if (!u.equals(v)) {
+                    // Verifica e atualiza a menor aresta para o componente de u
+                    if (!menorAresta.containsKey(u) || menorAresta.get(u).getPeso() > aresta.getPeso()) {
+                        menorAresta.put(u, aresta);
+                    }
+                    // Verifica e atualiza a menor aresta para o componente de v
+                    if (!menorAresta.containsKey(v) || menorAresta.get(v).getPeso() > aresta.getPeso()) {
+                        menorAresta.put(v, aresta);
+                    }
+                }
+            }
+
+            // Adiciona as menores arestas encontradas ao MST e une os componentes
+            for (Map.Entry<Vertice<TIPO>, Aresta<TIPO>> entry : menorAresta.entrySet()) {
+                Aresta<TIPO> aresta = entry.getValue();
+                Vertice<TIPO> u = uf.find(aresta.getInicio());
+                Vertice<TIPO> v = uf.find(aresta.getFim());
+
+                if (!uf.connected(u, v)) {
+                    uf.union(u, v);
+                    mst.add(aresta);
+                    System.out.println("Aresta adicionada ao MST: " + aresta.getInicio().getDado() + " - " + aresta.getFim().getDado() + " com peso " + aresta.getPeso());
+                }
+            }
+        }
+
+        System.out.println("Árvore Geradora Mínima construída pelo algoritmo de Borůvka:");
+        for (Aresta<TIPO> aresta : mst) {
+            System.out.println(aresta.getInicio().getDado() + " - " + aresta.getFim().getDado() + " com peso " + aresta.getPeso());
+        }
+
+        // Gera o ciclo mínimo aproximado usando DFS na MST
+        List<Vertice<TIPO>> cicloMinimo = gerarCicloMinimo(mst);
+
+        // Imprime o ciclo mínimo encontrado
+        System.out.println("Ciclo Mínimo:");
+        for (int i = 0; i < cicloMinimo.size(); i++) {
+            Vertice<TIPO> atual = cicloMinimo.get(i);
+            Vertice<TIPO> proximo = cicloMinimo.get((i + 1) % cicloMinimo.size());
+            System.out.println(atual.getDado() + " -> " + proximo.getDado());
+        }
+    }
+
+
+    private List<Vertice<TIPO>> gerarCicloMinimo(List<Aresta<TIPO>> mst) {
+        Set<Vertice<TIPO>> visitados = new HashSet<>();
+        List<Vertice<TIPO>> caminho = new ArrayList<>();
+        Vertice<TIPO> inicial = mst.get(0).getInicio();
+        dfs(inicial, visitados, caminho);
+        caminho.add(inicial); // Fecha o ciclo
+
+        return caminho;
+    }
+
+    private void dfs(Vertice<TIPO> vertice, Set<Vertice<TIPO>> visitados, List<Vertice<TIPO>> caminho) {
+        visitados.add(vertice);
+        caminho.add(vertice);
+
+        for (Aresta<TIPO> aresta : arestas) {
+            Vertice<TIPO> vizinho = null;
+            if (aresta.getInicio().equals(vertice) && !visitados.contains(aresta.getFim())) {
+                vizinho = aresta.getFim();
+            } else if (aresta.getFim().equals(vertice) && !visitados.contains(aresta.getInicio())) {
+                vizinho = aresta.getInicio();
+            }
+
+            if (vizinho != null) {
+                dfs(vizinho, visitados, caminho);
+            }
+        }
+    }
+
+    private List<Vertice<TIPO>> gerarCicloMinimo05(List<Aresta<TIPO>> mst) {
+        // Construa o grafo da MST
+        Map<Vertice<TIPO>, List<Vertice<TIPO>>> adjList = new LinkedHashMap<>();
+        for (Aresta<TIPO> aresta : mst) {
+            adjList.computeIfAbsent(aresta.getInicio(), k -> new ArrayList<>()).add(aresta.getFim());
+            adjList.computeIfAbsent(aresta.getFim(), k -> new ArrayList<>()).add(aresta.getInicio());
+        }
+
+        // Execute DFS para encontrar um ciclo (o ciclo mínimo aproximado)
+        Set<Vertice<TIPO>> visitados = new HashSet<>();
+        List<Vertice<TIPO>> ciclo = new ArrayList<>();
+        Vertice<TIPO> inicio = adjList.keySet().iterator().next();
+        dfs5(ciclo, adjList, inicio, visitados);
+
+        // Adiciona o vértice inicial ao final para fechar o ciclo
+        if (!ciclo.isEmpty() && !ciclo.get(0).equals(ciclo.get(ciclo.size() - 1))) {
+            ciclo.add(ciclo.get(0));
+        }
+
+        return ciclo;
+    }
+
+    private void dfs5(List<Vertice<TIPO>> ciclo, Map<Vertice<TIPO>, List<Vertice<TIPO>>> adjList, Vertice<TIPO> atual, Set<Vertice<TIPO>> visitados) {
+        visitados.add(atual);
+        ciclo.add(atual);
+
+        for (Vertice<TIPO> vizinho : adjList.get(atual)) {
+            if (!visitados.contains(vizinho)) {
+                dfs5(ciclo, adjList, vizinho, visitados);
+            }
+        }
+    }
 }
