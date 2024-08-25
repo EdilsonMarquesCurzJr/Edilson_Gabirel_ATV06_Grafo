@@ -22,6 +22,7 @@ public class Run {
                 String[] vertices = linha.split(";");
                 String vertice1 = vertices[0];
                 String vertice2 = vertices[1];
+                double peso = Double.parseDouble(vertices[2]);
 
                 // Adiciona vértice1 ao grafo apenas se ainda não foi adicionado
                 if (!verticesAdicionados.contains(vertice1)) {
@@ -36,7 +37,7 @@ public class Run {
                 }
 
                 // Adiciona a aresta entre os vértices
-                grafo.adicionarAresta(1.0, vertice1, vertice2, true);
+                grafo.adicionarAresta(peso, vertice1, vertice2, true);
             }
         } catch (IOException e) {
             System.out.println("Erro ao ler o arquivo: " + e.getMessage());

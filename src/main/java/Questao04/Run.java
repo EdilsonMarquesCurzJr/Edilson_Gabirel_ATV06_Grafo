@@ -22,6 +22,7 @@ public class Run {
                 String[] vertices = linha.split(";");
                 String vertice1 = vertices[0];
                 String vertice2 = vertices[1];
+                double peso = Double.parseDouble(vertices[2]);
 
                 // Adiciona vértice1 ao grafo apenas se ainda não foi adicionado
                 if (!verticesAdicionados.contains(vertice1)) {
